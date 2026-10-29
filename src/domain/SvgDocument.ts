@@ -1,6 +1,7 @@
 import { containerMutationAccess } from "./ContainerMutationAccess.js";
 import { DocumentSnapshot } from "./DocumentSnapshot.js";
 import { DomainError } from "./DomainError.js";
+import { Group } from "./Group.js";
 import type { Shape } from "./Shape.js";
 import type { ShapeContainer } from "./ShapeContainer.js";
 
@@ -77,6 +78,91 @@ export class SvgDocument {
 
   public getShapeCount(): number {
     return this.idIndex.size;
+  }
+
+  public groupShapes(groupId: string, shapeIds: readonly string[]): Group {
+    if (this.idIndex.has(groupId)) {
+      throw new DomainError("DUPLICATE_ID", `error: id already exists: ${groupId}`);
+    }
+    if (shapeIds.length === 0) {
+      throw new DomainError("EMPTY_GROUP", "error: group requires at least one shape");
+    }
+
+    const selectedIds = new Set<string>();
+    const selectedShapes: Shape[] = [];
+    for (const id of shapeIds) {
+      if (selectedIds.has(id)) {
+        throw new DomainError(
+          "DUPLICATE_GROUP_MEMBER",
+          `error: duplicate shape in group: ${id}`,
+        );
+      }
+      selectedIds.add(id);
+      selectedShapes.push(this.requireShape(id));
+    }
+
+    for (const shape of selectedShapes) {
+      for (const otherId of selectedIds) {
+        if (shape.getId() !== otherId && this.subtreeContains(shape, otherId)) {
+          throw new DomainError(
+            "CONTAINER_CYCLE",
+            `error: cannot group a container into its own descendant: ${shape.getId()}`,
+          );
+        }
+      }
+    }
+
+    const documentOrder = this.getDocumentOrder();
+    const orderById = new Map(
+      documentOrder.map((shape, index) => [shape.getId(), index] as const),
+    );
+    const orderedShapes = [...selectedShapes].sort(
+      (left, right) =>
+        (orderById.get(left.getId()) ?? Number.MAX_SAFE_INTEGER) -
+        (orderById.get(right.getId()) ?? Number.MAX_SAFE_INTEGER),
+    );
+
+    const firstListed = selectedShapes[0];
+    if (firstListed === undefined) {
+      throw new Error("Validated group selection unexpectedly became empty");
+    }
+    const destinationParentId = this.requireParentEntry(firstListed.getId());
+    const destinationSiblings = this.getSiblings(destinationParentId);
+    const firstIndex = destinationSiblings.findIndex(
+      (shape) => shape === firstListed,
+    );
+    if (firstIndex < 0) {
+      throw new Error(`Document parent index is inconsistent for ${firstListed.getId()}`);
+    }
+
+    const sameParent = selectedShapes.every(
+      (shape) => this.requireParentEntry(shape.getId()) === destinationParentId,
+    );
+    const insertionIndex = sameParent
+      ? Math.min(
+          ...selectedShapes.map((shape) => destinationSiblings.indexOf(shape)),
+        )
+      : firstIndex -
+        destinationSiblings
+          .slice(0, firstIndex)
+          .filter((shape) => selectedIds.has(shape.getId())).length;
+
+    const group = new Group(groupId, {}, orderedShapes);
+    for (const shape of selectedShapes) {
+      this.detachFromParent(shape, this.requireParentEntry(shape.getId()));
+    }
+
+    const destinationParent =
+      destinationParentId === null
+        ? undefined
+        : this.requireContainer(destinationParentId);
+    this.insertInto(destinationParent, insertionIndex, group);
+    this.idIndex.set(groupId, group);
+    this.parentById.set(groupId, destinationParentId);
+    for (const shape of orderedShapes) {
+      this.parentById.set(shape.getId(), groupId);
+    }
+    return group;
   }
 
   public moveShapeTo(id: string, containerId: string): void {
@@ -244,6 +330,29 @@ export class SvgDocument {
       return;
     }
     parent.insertChild(containerMutationAccess, index, shape);
+  }
+
+  private getDocumentOrder(): readonly Shape[] {
+    const result: Shape[] = [];
+    const visit = (shape: Shape): void => {
+      result.push(shape);
+      const container = shape.asContainer();
+      if (container !== undefined) {
+        for (const child of container.getChildren()) {
+          visit(child);
+        }
+      }
+    };
+    for (const shape of this.rootShapes) {
+      visit(shape);
+    }
+    return result;
+  }
+
+  private getSiblings(parentId: string | null): readonly Shape[] {
+    return parentId === null
+      ? this.rootShapes
+      : this.requireContainer(parentId).getChildren();
   }
 
   private registerSubtree(shape: Shape, parentId: string | null): void {

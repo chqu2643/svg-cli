@@ -119,6 +119,69 @@ describe("SvgDocument", () => {
     ]);
   });
 
+  it("groups same-parent shapes at the earliest selected position in document order", () => {
+    const document = new SvgDocument();
+    document.addShape(new Rect("a", 0, 0, 1, 1));
+    document.addShape(new Rect("b", 0, 0, 1, 1));
+    document.addShape(new Rect("c", 0, 0, 1, 1));
+    document.addShape(new Rect("d", 0, 0, 1, 1));
+
+    const group = document.groupShapes("grouped", ["c", "a"]);
+
+    expect(document.getRootShapes().map((shape) => shape.getId())).toEqual([
+      "grouped",
+      "b",
+      "d",
+    ]);
+    expect(group.getChildren().map((shape) => shape.getId())).toEqual(["a", "c"]);
+    expect(document.getParentId("a")).toBe("grouped");
+    expect(document.getParentId("c")).toBe("grouped");
+  });
+
+  it("groups cross-parent shapes at the first listed shape position", () => {
+    const document = new SvgDocument();
+    const left = new Group("left", {}, [
+      new Rect("a", 0, 0, 1, 1),
+      new Rect("b", 0, 0, 1, 1),
+    ]);
+    const right = new Group("right", {}, [new Circle("c", 0, 0, 1)]);
+    document.addShape(left);
+    document.addShape(right);
+
+    const group = document.groupShapes("mixed", ["b", "c"]);
+
+    expect(left.getChildren().map((shape) => shape.getId())).toEqual([
+      "a",
+      "mixed",
+    ]);
+    expect(right.getChildren()).toEqual([]);
+    expect(group.getChildren().map((shape) => shape.getId())).toEqual(["b", "c"]);
+    expect(document.getParentId("mixed")).toBe("left");
+  });
+
+  it("rejects invalid group selections without mutation", () => {
+    const document = new SvgDocument();
+    const child = new Group("child", {}, [new Rect("r1", 0, 0, 1, 1)]);
+    const parent = new Group("parent", {}, [child]);
+    document.addShape(parent);
+    const before = document.createSnapshot();
+
+    expect(() => document.groupShapes("bad", ["parent", "r1"])).toThrowError(
+      "error: cannot group a container into its own descendant: parent",
+    );
+    expect(() => document.groupShapes("bad", [])).toThrowError(
+      "error: group requires at least one shape",
+    );
+    expect(() => document.groupShapes("bad", ["r1", "r1"])).toThrowError(
+      "error: duplicate shape in group: r1",
+    );
+
+    expect(document.getShape("bad")).toBeUndefined();
+    expect(document.getParentId("r1")).toBe("child");
+    document.restore(before);
+    expect(document.getShapeCount()).toBe(3);
+  });
+
   it("ungroups a nested group in place while preserving child order", () => {
     const document = new SvgDocument();
     const nested = new Group("nested", {}, [
