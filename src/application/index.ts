@@ -13,6 +13,7 @@ export type {
 export { CreateCommand } from "./CreateCommand.js";
 export { CreateCommandBuilder } from "./CreateCommandBuilder.js";
 export { DeleteCommand } from "./DeleteCommand.js";
+export { DocumentService } from "./DocumentService.js";
 export { EditCommand } from "./EditCommand.js";
 export { EditorSession } from "./EditorSession.js";
 export type {
@@ -27,5 +28,6 @@ export { HistoryManager } from "./HistoryManager.js";
 export { MoveCommand } from "./MoveCommand.js";
 export { ScaleCommand } from "./ScaleCommand.js";
 export { SetCommand } from "./SetCommand.js";
+export type { SvgLoadResult, SvgRepository } from "./SvgRepository.js";
 export type { UndoableCommand } from "./UndoableCommand.js";
 export { UngroupCommand } from "./UngroupCommand.js";

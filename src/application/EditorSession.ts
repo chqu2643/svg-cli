@@ -8,6 +8,7 @@ import type { UndoableCommand } from "./UndoableCommand.js";
 
 export class EditorSession {
   private document: SvgDocument | undefined;
+  private currentPath: string | undefined;
 
   public constructor(private readonly history = new HistoryManager()) {}
 
@@ -17,6 +18,10 @@ export class EditorSession {
 
   public getDocument(): SvgDocument | undefined {
     return this.document;
+  }
+
+  public getCurrentPath(): string | undefined {
+    return this.currentPath;
   }
 
   public getHistory(): HistoryManager {
@@ -46,12 +51,16 @@ export class EditorSession {
   public initializeDocument(width = 800, height = 600): SvgDocument {
     const document = new SvgDocument(width, height);
     this.document = document;
+    this.currentPath = undefined;
     this.history.markDocumentOperation();
     return document;
   }
 
-  public markSaved(): void {
+  public markSaved(path?: string): void {
     this.requireDocument();
+    if (path !== undefined) {
+      this.currentPath = path;
+    }
     this.history.markDocumentOperation();
   }
 
@@ -59,8 +68,9 @@ export class EditorSession {
     return this.history.redo(this.requireDocument());
   }
 
-  public replaceDocument(document: SvgDocument): void {
+  public replaceDocument(document: SvgDocument, path?: string): void {
     this.document = document;
+    this.currentPath = path;
     this.history.markDocumentOperation();
   }
 

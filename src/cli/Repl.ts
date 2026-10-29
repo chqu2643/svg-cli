@@ -38,6 +38,8 @@ export class Repl {
       await this.handleLine(line);
       if (!isClosed) {
         reader.prompt();
+      } else {
+        this.output.write(PROMPT);
       }
     }
   }

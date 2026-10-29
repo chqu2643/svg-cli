@@ -2,6 +2,7 @@ export type ApplicationErrorCode =
   | "COMMAND_ALREADY_EXECUTED"
   | "COMMAND_NOT_EXECUTED"
   | "NO_DOCUMENT"
+  | "NO_SAVE_PATH"
   | "NOTHING_TO_REDO"
   | "NOTHING_TO_UNDO"
   | "UNDO_NOT_ALLOWED_AFTER_IO";

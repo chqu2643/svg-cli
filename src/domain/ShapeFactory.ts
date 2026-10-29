@@ -159,6 +159,67 @@ export class ShapeFactory {
     }
   }
 
+  public createRequestFromAttributes(
+    type: string,
+    id: string,
+    attributes: Readonly<Record<string, string>>,
+    text = "",
+  ): ShapeCreationRequest {
+    switch (type) {
+      case "circle":
+        this.requireOnlySvgAttributes(type, attributes, ["cx", "cy", "r"]);
+        return this.createRequest(type, id, [
+          this.requireSvgAttribute(type, attributes, "cx"),
+          this.requireSvgAttribute(type, attributes, "cy"),
+          this.requireSvgAttribute(type, attributes, "r"),
+        ]);
+      case "ellipse":
+        this.requireOnlySvgAttributes(type, attributes, ["cx", "cy", "rx", "ry"]);
+        return this.createRequest(type, id, [
+          this.requireSvgAttribute(type, attributes, "cx"),
+          this.requireSvgAttribute(type, attributes, "cy"),
+          this.requireSvgAttribute(type, attributes, "rx"),
+          this.requireSvgAttribute(type, attributes, "ry"),
+        ]);
+      case "g":
+        this.requireOnlySvgAttributes(type, attributes, []);
+        return this.createRequest(type, id, []);
+      case "line":
+        this.requireOnlySvgAttributes(type, attributes, ["x1", "y1", "x2", "y2"]);
+        return this.createRequest(type, id, [
+          this.requireSvgAttribute(type, attributes, "x1"),
+          this.requireSvgAttribute(type, attributes, "y1"),
+          this.requireSvgAttribute(type, attributes, "x2"),
+          this.requireSvgAttribute(type, attributes, "y2"),
+        ]);
+      case "rect":
+        this.requireOnlySvgAttributes(type, attributes, [
+          "x",
+          "y",
+          "width",
+          "height",
+        ]);
+        return this.createRequest(type, id, [
+          this.requireSvgAttribute(type, attributes, "x"),
+          this.requireSvgAttribute(type, attributes, "y"),
+          this.requireSvgAttribute(type, attributes, "width"),
+          this.requireSvgAttribute(type, attributes, "height"),
+        ]);
+      case "text":
+        this.requireOnlySvgAttributes(type, attributes, ["x", "y"]);
+        return this.createRequest(type, id, [
+          this.requireSvgAttribute(type, attributes, "x"),
+          this.requireSvgAttribute(type, attributes, "y"),
+          text,
+        ]);
+      default:
+        throw new DomainError(
+          "UNKNOWN_SHAPE_TYPE",
+          `error: unknown shape type: ${type} (is the plugin loaded?)`,
+        );
+    }
+  }
+
   private requireNumber(name: string, value: string | undefined): number {
     const number = value === undefined || value.trim() === "" ? Number.NaN : Number(value);
     if (!Number.isFinite(number)) {
@@ -168,6 +229,43 @@ export class ShapeFactory {
       );
     }
     return number;
+  }
+
+  private requireOnlySvgAttributes(
+    type: string,
+    attributes: Readonly<Record<string, string>>,
+    geometryAttributes: readonly string[],
+  ): void {
+    const commonAttributes = new Set([
+      "fill",
+      "id",
+      "stroke",
+      "stroke-width",
+      "transform",
+    ]);
+    for (const name of Object.keys(attributes)) {
+      if (!commonAttributes.has(name) && !geometryAttributes.includes(name)) {
+        throw new DomainError(
+          "UNKNOWN_ATTRIBUTE",
+          `error: unsupported SVG attribute: ${name} on <${type}>`,
+        );
+      }
+    }
+  }
+
+  private requireSvgAttribute(
+    type: string,
+    attributes: Readonly<Record<string, string>>,
+    name: string,
+  ): string {
+    const value = attributes[name];
+    if (value === undefined) {
+      throw new DomainError(
+        "INVALID_CREATE_ARGUMENTS",
+        `error: missing SVG attribute: ${name} on <${type}>`,
+      );
+    }
+    return value;
   }
 
   private requireParameterCount(
