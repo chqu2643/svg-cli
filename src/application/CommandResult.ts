@@ -12,9 +12,16 @@ export type EditAction =
 
 export type CommandResultDetail = number | string | readonly string[];
 
+export interface CommandResultDisplay {
+  readonly subjectType: string;
+  readonly suffix?: string;
+  readonly verb: string;
+}
+
 export interface CommandResult {
   readonly action: EditAction;
   readonly details?: Readonly<Record<string, CommandResultDetail>>;
+  readonly display: CommandResultDisplay;
   readonly targetId: string;
 }
 

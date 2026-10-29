@@ -9,7 +9,13 @@ export class DeleteCommand extends EditCommand {
   }
 
   protected performEdit(document: SvgDocument): CommandResult {
+    const shape = document.requireShape(this.id);
     document.deleteShape(this.id);
-    return { action: "delete", targetId: this.id };
+    return {
+      action: "delete",
+      details: { type: shape.type },
+      display: { subjectType: shape.type, verb: "deleted" },
+      targetId: this.id,
+    };
   }
 }

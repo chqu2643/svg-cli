@@ -2,6 +2,7 @@ import { SvgDocument } from "../domain/index.js";
 
 import { ApplicationError } from "./ApplicationError.js";
 import type { CommandResult, HistoryResult } from "./CommandResult.js";
+import type { DocumentTreeView, ShapeView } from "./DocumentView.js";
 import { HistoryManager } from "./HistoryManager.js";
 import type { UndoableCommand } from "./UndoableCommand.js";
 
@@ -20,6 +21,26 @@ export class EditorSession {
 
   public getHistory(): HistoryManager {
     return this.history;
+  }
+
+  public getShapeView(id: string): ShapeView {
+    const document = this.requireDocument();
+    const description = document.requireShape(id).describe();
+    const parentId = document.getParentId(id);
+    return {
+      description,
+      ...(parentId === undefined ? {} : { parentId }),
+    };
+  }
+
+  public getTreeView(id?: string): DocumentTreeView {
+    const document = this.requireDocument();
+    const canvas = document.getCanvasSize();
+    const roots =
+      id === undefined
+        ? document.getRootShapes().map((shape) => shape.describe())
+        : [document.requireShape(id).describe()];
+    return { ...canvas, roots };
   }
 
   public initializeDocument(width = 800, height = 600): SvgDocument {

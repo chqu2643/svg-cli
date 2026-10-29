@@ -25,6 +25,13 @@ export class CreateCommand extends EditCommand {
         ...(this.parentId === undefined ? {} : { parentId: this.parentId }),
         type: shape.type,
       },
+      display: {
+        subjectType: shape.type,
+        ...(this.parentId === undefined
+          ? {}
+          : { suffix: ` in g#${this.parentId}` }),
+        verb: "created",
+      },
       targetId: shape.getId(),
     };
   }

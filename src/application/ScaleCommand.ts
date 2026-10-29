@@ -12,10 +12,16 @@ export class ScaleCommand extends EditCommand {
   }
 
   protected performEdit(document: SvgDocument): CommandResult {
-    document.requireShape(this.id).scale(this.factor);
+    const shape = document.requireShape(this.id);
+    shape.scale(this.factor);
     return {
       action: "scale",
-      details: { factor: this.factor },
+      details: { factor: this.factor, type: shape.type },
+      display: {
+        subjectType: shape.type,
+        suffix: ` by ${String(this.factor)}`,
+        verb: "scaled",
+      },
       targetId: this.id,
     };
   }

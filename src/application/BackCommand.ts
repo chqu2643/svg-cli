@@ -9,7 +9,13 @@ export class BackCommand extends EditCommand {
   }
 
   protected performEdit(document: SvgDocument): CommandResult {
+    const shape = document.requireShape(this.id);
     document.sendToBack(this.id);
-    return { action: "back", targetId: this.id };
+    return {
+      action: "back",
+      details: { type: shape.type },
+      display: { subjectType: shape.type, verb: "sent to back" },
+      targetId: this.id,
+    };
   }
 }

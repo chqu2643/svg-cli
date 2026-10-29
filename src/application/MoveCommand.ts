@@ -13,10 +13,16 @@ export class MoveCommand extends EditCommand {
   }
 
   protected performEdit(document: SvgDocument): CommandResult {
-    document.requireShape(this.id).move(this.dx, this.dy);
+    const shape = document.requireShape(this.id);
+    shape.move(this.dx, this.dy);
     return {
       action: "move",
-      details: { dx: this.dx, dy: this.dy },
+      details: { dx: this.dx, dy: this.dy, type: shape.type },
+      display: {
+        subjectType: shape.type,
+        suffix: ` by (${String(this.dx)},${String(this.dy)})`,
+        verb: "moved",
+      },
       targetId: this.id,
     };
   }

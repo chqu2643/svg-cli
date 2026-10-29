@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { Repl } from "../cli/index.js";
+import { EditorSession } from "../application/index.js";
+import { CommandFactory, Repl } from "../cli/index.js";
 
 export class Main {
   public constructor(private readonly repl: Repl) {}
@@ -10,7 +11,9 @@ export class Main {
   }
 }
 
-const main = new Main(new Repl(process.stdin, process.stdout));
+const session = new EditorSession();
+const commandFactory = new CommandFactory(session);
+const main = new Main(new Repl(process.stdin, process.stdout, commandFactory));
 
 void main.run().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);

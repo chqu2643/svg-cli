@@ -9,7 +9,13 @@ export class FrontCommand extends EditCommand {
   }
 
   protected performEdit(document: SvgDocument): CommandResult {
+    const shape = document.requireShape(this.id);
     document.bringToFront(this.id);
-    return { action: "front", targetId: this.id };
+    return {
+      action: "front",
+      details: { type: shape.type },
+      display: { subjectType: shape.type, verb: "brought to front" },
+      targetId: this.id,
+    };
   }
 }

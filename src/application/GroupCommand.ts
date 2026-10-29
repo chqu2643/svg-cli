@@ -16,6 +16,11 @@ export class GroupCommand extends EditCommand {
     return {
       action: "group",
       details: { shapeIds: [...this.shapeIds] },
+      display: {
+        subjectType: "g",
+        suffix: ` with ${String(this.shapeIds.length)} children`,
+        verb: "created",
+      },
       targetId: this.groupId,
     };
   }

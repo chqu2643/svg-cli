@@ -12,10 +12,16 @@ export class AddToCommand extends EditCommand {
   }
 
   protected performEdit(document: SvgDocument): CommandResult {
+    const shape = document.requireShape(this.id);
     document.moveShapeTo(this.id, this.containerId);
     return {
       action: "addto",
-      details: { containerId: this.containerId },
+      details: { containerId: this.containerId, type: shape.type },
+      display: {
+        subjectType: shape.type,
+        suffix: ` into g#${this.containerId}`,
+        verb: "moved",
+      },
       targetId: this.id,
     };
   }

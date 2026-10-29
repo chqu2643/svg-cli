@@ -28,6 +28,32 @@ describe("ShapeFactory", () => {
     ]);
   });
 
+  it("builds typed creation requests from positional command values", () => {
+    const factory = new ShapeFactory();
+
+    expect(factory.createRequest("rect", "r1", ["1", "2", "3", "4", "red"]))
+      .toEqual({
+        height: 4,
+        id: "r1",
+        style: { fill: "red" },
+        type: "rect",
+        width: 3,
+        x: 1,
+        y: 2,
+      });
+    expect(factory.createRequest("text", "t1", ["5", "6", "hello world"]))
+      .toEqual({ id: "t1", text: "hello world", type: "text", x: 5, y: 6 });
+  });
+
+  it("validates positional creation values and usage", () => {
+    const factory = new ShapeFactory();
+
+    expect(() => factory.createRequest("circle", "c1", ["x", "2", "3"]))
+      .toThrowError("error: invalid number for cx: x");
+    expect(() => factory.createRequest("g", "g1", ["extra"]))
+      .toThrowError("error: usage: create g <id>");
+  });
+
   it("rejects unknown runtime types at the single type-dispatch boundary", () => {
     const factory = new ShapeFactory();
     const unknown = { id: "x1", type: "hexagon" } as unknown as ShapeCreationRequest;

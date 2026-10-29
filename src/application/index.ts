@@ -6,13 +6,21 @@ export type { Command } from "./Command.js";
 export type {
   CommandResult,
   CommandResultDetail,
+  CommandResultDisplay,
   EditAction,
   HistoryResult,
 } from "./CommandResult.js";
 export { CreateCommand } from "./CreateCommand.js";
+export { CreateCommandBuilder } from "./CreateCommandBuilder.js";
 export { DeleteCommand } from "./DeleteCommand.js";
 export { EditCommand } from "./EditCommand.js";
 export { EditorSession } from "./EditorSession.js";
+export type {
+  DocumentOperationGateway,
+  DocumentReadResult,
+  DocumentSaveResult,
+} from "./DocumentOperationGateway.js";
+export type { DocumentTreeView, ShapeView } from "./DocumentView.js";
 export { FrontCommand } from "./FrontCommand.js";
 export { GroupCommand } from "./GroupCommand.js";
 export { HistoryManager } from "./HistoryManager.js";

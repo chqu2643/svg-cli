@@ -10,6 +10,11 @@ export class UngroupCommand extends EditCommand {
 
   protected performEdit(document: SvgDocument): CommandResult {
     document.ungroup(this.id);
-    return { action: "ungroup", targetId: this.id };
+    return {
+      action: "ungroup",
+      details: { type: "g" },
+      display: { subjectType: "g", verb: "ungrouped" },
+      targetId: this.id,
+    };
   }
 }
