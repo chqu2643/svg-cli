@@ -14,16 +14,28 @@ export class SetCommand extends EditCommand {
 
   protected performEdit(document: SvgDocument): CommandResult {
     const shape = document.requireShape(this.id);
+    const previous = shape.describe().attributes[this.attribute];
     shape.setAttribute(this.attribute, this.value);
+    const display = {
+      subjectType: shape.type,
+      suffix: `: ${this.attribute}=${this.formatValue(this.value)}`,
+      verb: "updated",
+    };
     return {
       action: "set",
       details: { attribute: this.attribute, type: shape.type, value: this.value },
-      display: {
-        subjectType: shape.type,
-        suffix: `: ${this.attribute}=${this.formatValue(this.value)}`,
-        verb: "updated",
-      },
+      display,
+      redoDisplay: display,
       targetId: this.id,
+      ...(previous === undefined
+        ? {}
+        : {
+            undoDisplay: {
+              subjectType: shape.type,
+              suffix: `: ${this.attribute}=${this.formatValue(previous)}`,
+              verb: "updated",
+            },
+          }),
     };
   }
 

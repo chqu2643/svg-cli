@@ -10,12 +10,23 @@ export class DeleteCommand extends EditCommand {
 
   protected performEdit(document: SvgDocument): CommandResult {
     const shape = document.requireShape(this.id);
+    const parentId = document.getParentId(this.id);
     document.deleteShape(this.id);
+    const display = { subjectType: shape.type, verb: "deleted" };
     return {
       action: "delete",
-      details: { type: shape.type },
-      display: { subjectType: shape.type, verb: "deleted" },
+      details: {
+        ...(parentId === undefined ? {} : { parentId }),
+        type: shape.type,
+      },
+      display,
+      redoDisplay: display,
       targetId: this.id,
+      undoDisplay: {
+        subjectType: shape.type,
+        suffix: ` into ${parentId === undefined ? "svg" : `g#${parentId}`}`,
+        verb: "restored",
+      },
     };
   }
 }

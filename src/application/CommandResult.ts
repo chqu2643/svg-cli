@@ -22,7 +22,9 @@ export interface CommandResult {
   readonly action: EditAction;
   readonly details?: Readonly<Record<string, CommandResultDetail>>;
   readonly display: CommandResultDisplay;
+  readonly redoDisplay?: CommandResultDisplay;
   readonly targetId: string;
+  readonly undoDisplay?: CommandResultDisplay;
 }
 
 export interface HistoryResult {

@@ -42,7 +42,7 @@ describe("read/save command integration", () => {
       `read ${input} (1 elements)`,
     ]);
     await expect(factory.create(["move", "rect1", "10", "20"]).execute())
-      .resolves.toEqual(["rect#rect1 moved by (10,20)"]);
+      .resolves.toEqual(["rect#rect1 moved to (11,22)"]);
     await expect(factory.create(["save", output]).execute()).resolves.toEqual([
       `saved to ${output} (1 elements)`,
     ]);

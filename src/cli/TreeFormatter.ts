@@ -65,17 +65,26 @@ export class TreeFormatter {
       text === undefined || x === undefined || y === undefined
         ? []
         : [`(${String(x)},${String(y)})`, JSON.stringify(String(text))];
+    const x1 = shape.attributes.x1;
+    const y1 = shape.attributes.y1;
+    const x2 = shape.attributes.x2;
+    const y2 = shape.attributes.y2;
+    const lineSummary =
+      x1 === undefined || y1 === undefined || x2 === undefined || y2 === undefined
+        ? []
+        : [`(${String(x1)},${String(y1)})`, "->", `(${String(x2)},${String(y2)})`];
     const attributes = entries
       .filter(
         ([name]) =>
-          textSummary.length === 0 || !["text", "x", "y"].includes(name),
+          (textSummary.length === 0 || !["text", "x", "y"].includes(name)) &&
+          (lineSummary.length === 0 || !["x1", "y1", "x2", "y2"].includes(name)),
       )
       .map(([name, value]) => {
         const displayName =
           name === "width" ? "w" : name === "height" ? "h" : name;
         return `${displayName}=${String(value)}`;
       });
-    const summary = [...textSummary, ...attributes];
+    const summary = [...textSummary, ...lineSummary, ...attributes];
     return `${shape.type}#${shape.id}${summary.length === 0 ? "" : `  ${summary.join(" ")}`}`;
   }
 

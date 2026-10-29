@@ -75,9 +75,9 @@ describe("Repl", () => {
     expect(transcript).toContain(
       "text#title  parent=g#scene\n  (20,40) \"My Diagram\"\n",
     );
-    expect(transcript).toContain("rect#box moved by (5,-5)\n");
-    expect(transcript).toContain("undo: move box\n");
-    expect(transcript).toContain("redo: move box\n");
+    expect(transcript).toContain("rect#box moved to (15,15)\n");
+    expect(transcript).toContain("rect#box moved back to (10,20)\n");
+    expect(transcript).toContain("rect#box moved to (15,15)\n");
     expect(transcript).toContain("error: unknown command: unknown\n");
     expect(session.requireDocument().getShapeCount()).toBe(3);
   });

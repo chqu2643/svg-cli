@@ -1,6 +1,6 @@
 # SVG CLI
 
-使用 TypeScript 开发的命令行 SVG 编辑器。目前已完成架构设计、领域模型、应用命令、CLI 交互层以及 SVG 文件读写基础设施。
+使用 TypeScript 开发的命令行 SVG 编辑器。目前已完成架构设计、领域模型、应用命令、CLI 交互层、SVG 文件读写基础设施以及完整集成验收。
 
 ## 环境要求
 
@@ -22,4 +22,4 @@ pnpm run build
 
 ## 当前阶段
 
-领域层和应用层已实现六种图形、文档树、十种编辑命令、快照回滚与 undo/redo。REPL 已接入全部命令；`read/save` 支持嵌套 SVG、缺失 ID 补全、XML 转义、`translate`/等比 `scale` 归一化和同目录临时文件原子保存。当前支持 `svg/g/rect/circle/ellipse/line/text` 及需求规定的几何与公共样式属性，其他会影响画面的元素或属性会明确报错而不会静默丢失。
+领域层和应用层已实现六种图形、文档树、十种编辑命令、快照回滚与 undo/redo。REPL 已接入全部命令；`read/save` 支持嵌套 SVG、缺失 ID 补全、XML 转义、`translate`/等比 `scale` 归一化和同目录临时文件原子保存。当前支持 `svg/g/rect/circle/ellipse/line/text` 及需求规定的几何与公共样式属性，其他会影响画面的元素或属性会明确报错而不会静默丢失。需求中的完整典型会话与两节点流程图现已纳入端到端回归，保存结果也已通过 Edge 实际渲染验证。
