@@ -1,0 +1,19 @@
+@startuml
+top to bottom direction
+
+package "main\n启动与组装" as Main
+package "cli\n命令行交互" as Cli
+package "application\n命令、历史与存储接口" as App
+package "domain\n图形模型与文档树" as Domain
+package "infrastructure\nSVG 与文件读写" as Infra
+
+Main ..> Cli
+Main ..> App
+Main ..> Infra
+Main ..> Domain
+
+Cli ..> App
+App ..> Domain
+Infra ..> App : 实现存储接口
+Infra ..> Domain
+@enduml

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-labelledby="title desc">
+  <title id="title">SVG CLI 模块依赖包图</title>
+  <desc id="desc">main 依赖 cli、application、infrastructure 和 domain；cli 依赖 application；application 依赖 domain；infrastructure 实现 application 存储接口并依赖 domain。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .edge { fill: none; stroke: #475569; stroke-width: 2; stroke-dasharray: 7 5; marker-end: url(#arrow); }
+      .node { stroke-width: 2; rx: 12; filter: url(#shadow); }
+      .name { font: 700 20px "Segoe UI", "Microsoft YaHei", sans-serif; fill: #0f172a; text-anchor: middle; }
+      .role { font: 14px "Segoe UI", "Microsoft YaHei", sans-serif; fill: #334155; text-anchor: middle; }
+      .label { font: 13px "Segoe UI", "Microsoft YaHei", sans-serif; fill: #475569; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect width="960" height="640" fill="#f8fafc" rx="18"/>
+  <text x="480" y="34" class="label">箭头表示静态代码依赖</text>
+
+  <path class="edge" d="M405 130 L265 188"/>
+  <path class="edge" d="M555 130 L695 188"/>
+  <path class="edge" d="M480 130 L480 328"/>
+  <path class="edge" d="M575 95 C900 95 900 555 615 555"/>
+  <path class="edge" d="M265 268 L405 328"/>
+  <path class="edge" d="M695 268 L555 328"/>
+  <path class="edge" d="M480 408 L480 508"/>
+  <path class="edge" d="M760 268 C760 455 680 555 615 555"/>
+
+  <g>
+    <rect class="node" x="365" y="50" width="230" height="80" fill="#dbeafe" stroke="#2563eb"/>
+    <text x="480" y="84" class="name">main</text>
+    <text x="480" y="110" class="role">启动与组装</text>
+  </g>
+  <g>
+    <rect class="node" x="90" y="188" width="250" height="80" fill="#fef3c7" stroke="#d97706"/>
+    <text x="215" y="222" class="name">cli</text>
+    <text x="215" y="248" class="role">命令行交互</text>
+  </g>
+  <g>
+    <rect class="node" x="620" y="188" width="250" height="80" fill="#fce7f3" stroke="#db2777"/>
+    <text x="745" y="222" class="name">infrastructure</text>
+    <text x="745" y="248" class="role">SVG 与文件读写</text>
+  </g>
+  <g>
+    <rect class="node" x="365" y="328" width="230" height="80" fill="#dcfce7" stroke="#16a34a"/>
+    <text x="480" y="362" class="name">application</text>
+    <text x="480" y="388" class="role">命令、历史与存储接口</text>
+  </g>
+  <g>
+    <rect class="node" x="365" y="508" width="250" height="94" fill="#ede9fe" stroke="#7c3aed"/>
+    <text x="490" y="547" class="name">domain</text>
+    <text x="490" y="574" class="role">图形模型与文档树</text>
+  </g>
+
+  <rect x="600" y="305" width="146" height="26" rx="13" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="673" y="323" class="label">实现存储接口</text>
+</svg>
